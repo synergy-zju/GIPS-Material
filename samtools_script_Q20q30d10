@@ -1,0 +1,14 @@
+# samtools version: 0.1.18
+#change .sam file to .bam file
+/path/to/samtools view -bS "$1" > /path/to/Kabuki/Working/temporary/temp.1.bam
+#sort
+/path/to/samtools sort -m 10000000000 /path/to/Kabuki/Working/temporary/temp.1.bam /path/to/Kabuki/Working/temporary/temp.2
+#index
+/path/to/samtools index /path/to/Kabuki/Working/temporary/temp.2.bam
+# remove potential PCR duplicates
+/path/to/samtools rmdup /path/to/Kabuki/Working/temporary/temp.2.bam /path/to/Kabuki/Working/temporary/temp.3.bam 
+# index "$1"rmdup.bam
+/path/to/samtools index /path/to/Kabuki/Working/temporary/temp.3.bam 
+#call
+/path/to/samtools mpileup -Q 20 -q 30 -ugSf /path/to/GRCh37.p5_squence_fa/GRCh37.p5_Chr.fa /path/to/Kabuki/Working/temporary/temp.3.bam  | /path/to/bcftools view -bvcg - > /path/to/Kabuki/Working/temporary/temp.4
+/path/to/bcftools/bcftools view /path/to/Kabuki/Working/temporary/temp.4 | /path/to/bcftools/vcfutils.pl varFilter -d 10 > "$2"  
